@@ -1,4 +1,7 @@
-
+##
+# 
+#
+##
 cd $HOME/devel/importador_teo
 
 for archivo in `find /home/tepetl/info/INTERMAGNET/ -ctime -1  |grep "TEO$" |grep -v "A\." |grep -v "/[0-9]" |sort `
