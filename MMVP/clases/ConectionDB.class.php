@@ -7,6 +7,7 @@
  * @author EGL
  */
 class ConectionDB {
+    
     protected $conexion;
     public $res;
     private $serverName;
