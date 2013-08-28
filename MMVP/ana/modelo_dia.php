@@ -112,7 +112,7 @@ function procesaRenglon($ren) {
     // checamos que estemos en el mismo dia y si no ciclamos
     $d_cal=date("d",$ren['fhepoc']);
     
-    $segunda_corr=($d_modelo-$d_cal)*24*3600; 
+    $segunda_corr=($d_modelo-$d_cal)*86400; 
     
     $ren['fhepoc']+=$segunda_corr;
     

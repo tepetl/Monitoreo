@@ -1,9 +1,9 @@
 <?php
 
 /**
- * @file lecturacom
+ * @file lecturacom.php
  * 
- * @author AAFR
+ * @author AAFR <alffore@gmail.com>
  */
 date_default_timezone_set('UTC');
 include_once 'clases/ConectionDB.class.php';

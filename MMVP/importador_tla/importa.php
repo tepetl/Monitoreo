@@ -6,7 +6,7 @@
  * @author AAFR  <alffore@gmail.com>
  */
 date_default_timezone_set('UTC');
-include_once 'clases/ConectionDB.class.php';
+include_once '../clases/ConectionDB.class.php';
 include_once 'clases/Importa_TLA.class.php';
 
 

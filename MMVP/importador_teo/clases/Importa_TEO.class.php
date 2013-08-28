@@ -5,7 +5,7 @@
  */
 
 /**
- * Description of Importa_TEO
+ * @brief Clase Importa_TEO, importa los datos de la estacion TEO a la BD
  *
  * @author AAFR <alffore@gmail.com>
  */

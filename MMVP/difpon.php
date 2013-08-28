@@ -3,7 +3,7 @@
 /**
  * @file difpon.php
  * 
- * @author John Doe <john.doe@example.com>
+ * @author AAFR <alffore@gmail.com> 
  */
 
 date_default_timezone_set('UTC');
