@@ -2,7 +2,7 @@
 /**
  * @file calcula_alfa.php
  * 
- * @author John Doe <john.doe@example.com>
+ * @author AAFR <alffore@gmail.com>
  */
 
 
