@@ -16,6 +16,6 @@ set ytics 1
 #plot [][]  "sal.txt" using 5:6 with points pt 13 title 'DP', -0.6791957942 with lines lw 1 linecolor rgb "blue" title 'AvDP '
 #
 
-plot [][-10:10]  "sal.txt" using 5:6 with points pt 13 title 'DP', 0.4211152395 with lines lw 1 linecolor rgb "blue" title 'AvDP '
+plot [][-10:10]  "sal.txt" using 5:6 with points pt 13 title 'DP', 0.1574631959 with lines lw 1 linecolor rgb "blue" title 'AvDP '
 
 #plot [][-10:10]  "sal.txt" using 5:6 with points pt 13 title 'DP'#
