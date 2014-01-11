@@ -1,6 +1,5 @@
 <?php
 
-
 /**
  * Description of Importa_CHX
  *
@@ -11,8 +10,6 @@ class Importa_CHX {
     private $anno;
     private $conn;
     private $archivo;
-    
-    
     private $blecm;
 
     /**
@@ -27,19 +24,19 @@ class Importa_CHX {
         $this->archivo = $archivo;
         $alineas = file($archivo);
 
-        
-        $total_lin=count($alineas);
-        
+
+        $total_lin = count($alineas);
+
 //        echo $total_lin;
 //        exit();
-        
-        $this->blecm=false;
-        
-      
 
-        
-        
-        
+        $this->blecm = false;
+
+
+
+
+
+
         $bp = false;
         $baux = array();
         foreach ($alineas as $pos => $linea) {
@@ -52,17 +49,17 @@ class Importa_CHX {
             // if ($ares[0]) {
             $aux = array_values(array_filter(explode(" ", $ares[1])));
 
-         
+
 
             if (count($aux) === 10) {
-         
+
                 if ($bp === true) {
-               
+
                     $this->procesaBloque($baux);
                     $baux = array();
-                    
-     
-                    $this->blecm=false;
+
+
+                    $this->blecm = false;
                 } else {
 
                     $bp = true;
@@ -76,12 +73,9 @@ class Importa_CHX {
 //                //imprime error por caracteres no leeibles
 //                $this->imprimeError("Carácteres no legibles", $pos);
 //            }
-
-
         }
-        
+
         $this->procesaBloque($baux);
-        
     }
 
     /**
@@ -121,12 +115,12 @@ class Importa_CHX {
 
         echo $this->archivo . "::" . $arg . " línea: " . $pos . "\n";
     }
-    
-/**
- * 
- * @param type $baux
- * @return type
- */
+
+    /**
+     * 
+     * @param type $baux
+     * @return type
+     */
     protected function procesaBloque($baux) {
         //print_r($baux);
 
@@ -135,10 +129,11 @@ class Importa_CHX {
         $apre = $this->procesaHeader($baux[0]);
 
         //print_r($apre);
-        
+
         $tam = count($baux);
-       
-        if($tam>31)return;
+
+        if ($tam > 31)
+            return;
 
         for ($i = 1; $i < $tam; $i++) {
             $entrada = $baux[$i];
@@ -146,26 +141,25 @@ class Importa_CHX {
             $adatos[count($adatos)] = $this->generaLectura($apre, $entrada[3], 2 * $i - 2);
 
             $adatos[count($adatos)] = $this->generaLectura($apre, $entrada[7], 2 * $i - 1);
-            
         }
 
         //print_r($adatos);
-        
-        if(!$this->blecm){        
-        $tam2=count($adatos);
-        //echo $tam2."\n";
-        for ($i = 0; $i < $tam2; $i++) {
-            $a=$adatos[$i];
-        $this->insertaQuery($a[0], $a[1], $a[2], $a[3]);
-        }
+
+        if (!$this->blecm) {
+            $tam2 = count($adatos);
+            //echo $tam2."\n";
+            for ($i = 0; $i < $tam2; $i++) {
+                $a = $adatos[$i];
+                $this->insertaQuery($a[0], $a[1], $a[2], $a[3]);
+            }
         }
     }
-    
-/**
- * 
- * @param type $aux
- * @return type
- */
+
+    /**
+     * 
+     * @param type $aux
+     * @return type
+     */
     protected function procesaHeader($aux) {
 
         $dia = $aux[2];
@@ -179,14 +173,14 @@ class Importa_CHX {
 
         return array($dia, $preid, $prefh);
     }
-    
-/**
- * 
- * @param type $apre
- * @param type $lec
- * @param type $t
- * @return type
- */
+
+    /**
+     * 
+     * @param type $apre
+     * @param type $lec
+     * @param type $t
+     * @return type
+     */
     protected function generaLectura($apre, $lec, $t) {
 
         $id = $apre[1] . sprintf("%02d", $t);
@@ -205,10 +199,10 @@ class Importa_CHX {
         $lectura = trim($lectura);
 
         $lectura = floatval($lectura);
-        
-        
-        
-        
+
+
+
+
 
         if ($lectura < 10000)
             $lectura*=100.00;
@@ -219,8 +213,9 @@ class Importa_CHX {
 
         $lectura = floatval($lectura) / 10.0;
 
-        if($lectura<$GLOBALS['lim_inf'] || $lectura>$GLOBALS['lim_sup'])$this->blecm=true;
-        
+        if ($lectura < $GLOBALS['lim_inf'] || $lectura > $GLOBALS['lim_sup'])
+            $this->blecm = true;
+
         return $lectura;
     }
 
@@ -233,32 +228,28 @@ class Importa_CHX {
      */
     private function insertaQuery($id, $fh, $dia, $lectura) {
 
-        if($this->checaEID($id)){
-            $query="DELETE FROM estacion_teo WHERE id=".$id;
+        if ($this->checaEID($id)) {
+            $query = "DELETE FROM estacion_teo WHERE id=" . $id;
             $this->conn->ejecutaQuery($query);
         }
-        
+
         $query = "INSERT INTO estacion_teo (id, fecha_hora, dia, registro) VALUES (" . $id . ",'" . $fh . "'," . $dia . "," . $lectura . " );";
 //echo $query."\n";
         $this->conn->ejecutaQuery($query);
     }
 
-    
-     /**
+    /**
      * 
      * @param type $id
      * @return type
      */
-    private function checaEID($id){
-        
-        $query="SELECT COUNT(*) as cuenta FROM estacion_teo WHERE id=".$id;
-        
-        $this->conn->ejecutaQuery($query);
-        
-        return($this->conn->obtenCampo("cuenta")>0)?TRUE:FALSE;
-    }
-}
+    private function checaEID($id) {
 
-    
-    
+        $query = "SELECT COUNT(*) as cuenta FROM estacion_teo WHERE id=" . $id;
+
+        $this->conn->ejecutaQuery($query);
+
+        return($this->conn->obtenCampo("cuenta") > 0) ? TRUE : FALSE;
+    }
+
 }
