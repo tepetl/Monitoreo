@@ -7,6 +7,18 @@ regisrtro float4);
 
 CREATE INDEX id_estacion_teo ON estacion_teo (id);
 
+
+CREATE TABLE estacion_chx(
+id int4,
+fecha_hora timestamp,
+dia int4,
+registro float4);
+
+
+CREATE INDEX id_estacion_chx ON estacion_chx (id);
+
+
+
 CREATE TABLE estacion_tla(
 id int(4),
 fecha_hora timestamp,

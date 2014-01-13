@@ -229,11 +229,11 @@ class Importa_CHX {
     private function insertaQuery($id, $fh, $dia, $lectura) {
 
         if ($this->checaEID($id)) {
-            $query = "DELETE FROM estacion_teo WHERE id=" . $id;
+            $query = "DELETE FROM estacion_chx WHERE id=" . $id;
             $this->conn->ejecutaQuery($query);
         }
 
-        $query = "INSERT INTO estacion_teo (id, fecha_hora, dia, registro) VALUES (" . $id . ",'" . $fh . "'," . $dia . "," . $lectura . " );";
+        $query = "INSERT INTO estacion_chx (id, fecha_hora, dia, registro) VALUES (" . $id . ",'" . $fh . "'," . $dia . "," . $lectura . " );";
 //echo $query."\n";
         $this->conn->ejecutaQuery($query);
     }
@@ -245,7 +245,7 @@ class Importa_CHX {
      */
     private function checaEID($id) {
 
-        $query = "SELECT COUNT(*) as cuenta FROM estacion_teo WHERE id=" . $id;
+        $query = "SELECT COUNT(*) as cuenta FROM estacion_chx WHERE id=" . $id;
 
         $this->conn->ejecutaQuery($query);
 
