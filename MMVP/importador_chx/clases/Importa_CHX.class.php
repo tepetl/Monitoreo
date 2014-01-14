@@ -48,11 +48,11 @@ class Importa_CHX {
                 if (count($aux) == 4) {
 
                     $fh = $this->procesaFecha($aux[0], $aux[1]);
-                    $dia = $this->procesaDia($fh);
+                    $dia = $this->procesaDia($fh[1]);
                     $lectura = $this->procesaLectura($aux[2]);
-                    $id = $fh;
+                    $id = $fh[1];
 
-                    $this->insertaQuery($id, $fh, $dia, $lectura);
+                    $this->insertaQuery($id,$fh[0] , $dia, $lectura);
                 }
             }
         }
@@ -98,7 +98,7 @@ class Importa_CHX {
         $dato = $aux[2] . "-" . $aux[1] . "-" . $aux[0] . " " . $hora;
 
 
-        return strtotime($dato);
+        return array($dato,strtotime($dato));
     }
 
     /**
