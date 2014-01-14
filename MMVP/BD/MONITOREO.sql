@@ -7,7 +7,7 @@ regisrtro float4);
 
 CREATE INDEX id_estacion_teo ON estacion_teo (id);
 
-
+-- DROP TABLE estacion_chx;
 CREATE TABLE estacion_chx(
 id int4,
 fecha_hora timestamp,
@@ -16,6 +16,9 @@ registro float4);
 
 
 CREATE INDEX id_estacion_chx ON estacion_chx (id);
+
+GRANT ALL ON estacion_chx TO popoca;
+
 
 
 

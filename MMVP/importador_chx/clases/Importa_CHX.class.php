@@ -3,7 +3,7 @@
 /**
  * Description of Importa_CHX
  *
- * @author AAFR <alffore@gmail.com>
+ * @author EGL <eduardoglez@gmail.com>, AAFR <alffore@gmail.com>
  */
 class Importa_CHX {
 
@@ -12,6 +12,7 @@ class Importa_CHX {
     private $archivo;
     private $blecm;
 
+    
     /**
      * 
      * @param ConectionDB $conn
@@ -27,55 +28,34 @@ class Importa_CHX {
 
         $total_lin = count($alineas);
 
-//        echo $total_lin;
-//        exit();
+
 
         $this->blecm = false;
 
-
-
-
-
-
         $bp = false;
-        $baux = array();
-        foreach ($alineas as $pos => $linea) {
 
-            //echo $pos."::".$linea;
+
+        foreach ($alineas as $pos => $linea) {
 
             $ares = $this->checaCadena($linea);
 
+            if (!$ares[0]) {
+                $this->imprimeError("Caracteres no legibles", $pos);
+            } else {
 
-            // if ($ares[0]) {
-            $aux = array_values(array_filter(explode(" ", $ares[1])));
+                $aux = array_values(array_filter(explode(" ", $ares[1])));
 
+                if (count($aux) == 4) {
 
+                    $fh = $this->procesaFecha($aux[0], $aux[1]);
+                    $dia = $this->procesaDia($fh);
+                    $lectura = $this->procesaLectura($aux[2]);
+                    $id = $fh;
 
-            if (count($aux) === 10) {
-
-                if ($bp === true) {
-
-                    $this->procesaBloque($baux);
-                    $baux = array();
-
-
-                    $this->blecm = false;
-                } else {
-
-                    $bp = true;
+                    $this->insertaQuery($id, $fh, $dia, $lectura);
                 }
             }
-
-            if ($bp === true) {
-                $baux[count($baux)] = $aux;
-            }
-//            } else {
-//                //imprime error por caracteres no leeibles
-//                $this->imprimeError("Carácteres no legibles", $pos);
-//            }
         }
-
-        $this->procesaBloque($baux);
     }
 
     /**
@@ -95,7 +75,7 @@ class Importa_CHX {
 
             $linea[$i] = str_replace(array('?'), ' ', $linea[$i]);
 
-            if (ctype_print($linea[$i]) && (ctype_digit($linea[$i]) || $linea[$i] === ":" || $linea[$i] === " " || $linea[$i] === "\n")) {
+            if (ctype_print($linea[$i]) && (ctype_digit($linea[$i]) || $linea[$i] === ":" || $linea[$i] === " " || $linea[$i] === "\n" || $linea[$i] === "-" || $linea[$i] === ".")) {
                 $vb = true;
             } else {
                 $vb = false;
@@ -107,86 +87,27 @@ class Importa_CHX {
     }
 
     /**
-     * 
-     * @param type $arg
-     * @param type $pos
+     * Metodo para procesar la fecha regrea los dos formatos necesarios de fecha hora
+     * @param String $fecha
+     * @param type $hora
      */
-    protected function imprimeError($arg, $pos) {
+    protected function procesaFecha($fecha, $hora) {
 
-        echo $this->archivo . "::" . $arg . " línea: " . $pos . "\n";
+        $aux = explode("-", $fecha);
+
+        $dato = $aux[2] . "-" . $aux[1] . "-" . $aux[0] . " " . $hora;
+
+
+        return strtotime($dato);
     }
 
     /**
      * 
-     * @param type $baux
+     * @param type $fecha
      * @return type
      */
-    protected function procesaBloque($baux) {
-        //print_r($baux);
-
-        $adatos = array();
-
-        $apre = $this->procesaHeader($baux[0]);
-
-        //print_r($apre);
-
-        $tam = count($baux);
-
-        if ($tam > 31)
-            return;
-
-        for ($i = 1; $i < $tam; $i++) {
-            $entrada = $baux[$i];
-
-            $adatos[count($adatos)] = $this->generaLectura($apre, $entrada[3], 2 * $i - 2);
-
-            $adatos[count($adatos)] = $this->generaLectura($apre, $entrada[7], 2 * $i - 1);
-        }
-
-        //print_r($adatos);
-
-        if (!$this->blecm) {
-            $tam2 = count($adatos);
-            //echo $tam2."\n";
-            for ($i = 0; $i < $tam2; $i++) {
-                $a = $adatos[$i];
-                $this->insertaQuery($a[0], $a[1], $a[2], $a[3]);
-            }
-        }
-    }
-
-    /**
-     * 
-     * @param type $aux
-     * @return type
-     */
-    protected function procesaHeader($aux) {
-
-        $dia = $aux[2];
-        $preid = $dia;
-
-        $preid.= date("Ymd", mktime(0, 0, 0, 1, $dia, $this->anno));
-
-        $preid.=$aux[3];
-
-        $prefh = date("Y-m-d", mktime(0, 0, 0, 1, $dia, $this->anno)) . " " . $aux[3] . ":";
-
-        return array($dia, $preid, $prefh);
-    }
-
-    /**
-     * 
-     * @param type $apre
-     * @param type $lec
-     * @param type $t
-     * @return type
-     */
-    protected function generaLectura($apre, $lec, $t) {
-
-        $id = $apre[1] . sprintf("%02d", $t);
-        $fh = $apre[2] . sprintf("%02d", $t) . ":00";
-
-        return array($id, $fh, $apre[0], $this->generaRegistro($lec));
+    protected function procesaDia($fecha_ts) {
+        return 0 + strftime("%j", $fecha_ts);
     }
 
     /**
@@ -194,29 +115,23 @@ class Importa_CHX {
      * @param type $lectura
      * @return type
      */
-    protected function generaRegistro($lectura) {
-
+    protected function procesaLectura($lectura) {
         $lectura = trim($lectura);
+        if ($lectura[0] == 0) {
+            $lectura[0] = " ";
+        }
 
-        $lectura = floatval($lectura);
+        return 0.00 + trim($lectura);
+    }
 
+    /**
+     * 
+     * @param type $arg
+     * @param type $pos
+     */
+    protected function imprimeError($arg, $pos) {
 
-
-
-
-        if ($lectura < 10000)
-            $lectura*=100.00;
-
-        if ($lectura < 100000)
-            $lectura*=10.00;
-
-
-        $lectura = floatval($lectura) / 10.0;
-
-        if ($lectura < $GLOBALS['lim_inf'] || $lectura > $GLOBALS['lim_sup'])
-            $this->blecm = true;
-
-        return $lectura;
+        echo $this->archivo . "::" . $arg . " línea: " . $pos . "\n";
     }
 
     /**
@@ -234,7 +149,7 @@ class Importa_CHX {
         }
 
         $query = "INSERT INTO estacion_chx (id, fecha_hora, dia, registro) VALUES (" . $id . ",'" . $fh . "'," . $dia . "," . $lectura . " );";
-//echo $query."\n";
+
         $this->conn->ejecutaQuery($query);
     }
 
